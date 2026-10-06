@@ -42,10 +42,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS — use wildcard in dev, explicit origins in production
+# CORS — allow all origins (frontend & backend share the same Vercel domain)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins_list if settings.APP_ENV == "production" else ["*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

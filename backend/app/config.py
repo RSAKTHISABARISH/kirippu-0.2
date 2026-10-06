@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     # On Vercel: set DATABASE_URL to your Supabase PostgreSQL connection string
     # Format: postgresql://user:password@host:port/dbname
     # ------------------------------------------------------------------ #
-    DATABASE_URL: str = "sqlite+aiosqlite:///./kurippu.db"
+    DATABASE_URL: str = "sqlite+aiosqlite:////tmp/kurippu.db"
 
     # Supabase (recommended for Vercel — free PostgreSQL + Storage)
     SUPABASE_URL: str = ""
