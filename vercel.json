@@ -1,22 +1,22 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": { "maxDuration": 30 }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "kurippu-backend": {
+      "root": "backend",
+      "framework": "fastapi",
+      "entrypoint": "app/main.py",
+      "buildCommand": "pip install -r requirements.txt"
     },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+    "kurippu-frontend": {
+      "root": "frontend",
+      "framework": "vite",
+      "buildCommand": "npm install && npm run build"
     }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "api/index.py" },
-    { "src": "/health",   "dest": "api/index.py" },
-    { "src": "/static/(.*)", "dest": "api/index.py" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)",    "destination": { "service": "kurippu-backend" } },
+    { "source": "/health",      "destination": { "service": "kurippu-backend" } },
+    { "source": "/static/(.*)", "destination": { "service": "kurippu-backend" } },
+    { "source": "/(.*)",        "destination": { "service": "kurippu-frontend" } }
   ]
 }
