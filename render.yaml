@@ -1,0 +1,67 @@
+###############################################################
+# Render Blueprint — KURIPPU
+# Deploys backend (FastAPI) + frontend (React/Vite) as static site
+# Docs: https://render.com/docs/blueprint-spec
+###############################################################
+
+services:
+  # ─────────────────────────────────────────────
+  # Backend — FastAPI (Python)
+  # ─────────────────────────────────────────────
+  - type: web
+    name: kurippu-backend
+    runtime: python
+    region: singapore   # change to: ohio | oregon | frankfurt | singapore
+    plan: free           # upgrade to starter ($7/mo) for always-on
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # Set this manually in Render dashboard → your Supabase Postgres URL
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random value
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRE_MINUTES
+        value: "10080"
+      - key: AI_PROVIDER
+        value: openai
+      - key: AI_API_KEY
+        sync: false          # Set your OpenAI API key in dashboard
+      - key: AI_MODEL
+        value: gpt-4o-mini
+      - key: STORAGE_PROVIDER
+        value: local
+      - key: STORAGE_PATH
+        value: /tmp/uploads
+      - key: APP_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        sync: false          # Set to your Render frontend URL after first deploy
+
+  # ─────────────────────────────────────────────
+  # Frontend — React + Vite (Static Site)
+  # ─────────────────────────────────────────────
+  - type: web
+    name: kurippu-frontend
+    runtime: static
+    region: singapore
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      # SPA fallback — all routes → index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # Set to your backend URL, e.g. https://kurippu-backend.onrender.com

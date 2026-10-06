@@ -42,10 +42,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS — use wildcard in dev, explicit origins in production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows Vite dev server & any port during development
+    allow_origins=settings.allowed_origins_list if settings.APP_ENV == "production" else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
