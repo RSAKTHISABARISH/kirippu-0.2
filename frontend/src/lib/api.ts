@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// In production (Vercel), leave VITE_API_URL="" so all /api/* calls are relative (same domain).
+// In dev, falls back to localhost:8000 (Vite proxy also handles this).
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE,
